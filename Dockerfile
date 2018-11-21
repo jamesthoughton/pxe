@@ -1,16 +1,17 @@
 FROM stackbrew/debian:jessie
 ENV ARCH amd64
-ENV DIST stretch
-ENV MIRROR http://ftp.nl.debian.org
+ENV DIST bionic
+ENV MIRROR http://archive.ubuntu.com
 RUN apt-get -q update
 RUN apt-get -qy install dnsmasq wget iptables
 RUN wget --no-check-certificate https://raw.github.com/jpetazzo/pipework/master/pipework
 RUN chmod +x pipework
 RUN mkdir /tftp
 WORKDIR /tftp
-RUN wget $MIRROR/debian/dists/$DIST/main/installer-$ARCH/current/images/netboot/debian-installer/$ARCH/linux
-RUN wget $MIRROR/debian/dists/$DIST/main/installer-$ARCH/current/images/netboot/debian-installer/$ARCH/initrd.gz
-RUN wget $MIRROR/debian/dists/$DIST/main/installer-$ARCH/current/images/netboot/debian-installer/$ARCH/pxelinux.0
+RUN wget $MIRROR/ubuntu/dists/$DIST/main/installer-$ARCH/current/images/netboot/ubuntu-installer/$ARCH/linux
+RUN wget $MIRROR/ubuntu/dists/$DIST/main/installer-$ARCH/current/images/netboot/ubuntu-installer/$ARCH/initrd.gz
+RUN wget $MIRROR/ubuntu/dists/$DIST/main/installer-$ARCH/current/images/netboot/ubuntu-installer/$ARCH/pxelinux.0
+RUN wget $MIRROR/ubuntu/dists/$DIST/main/installer-$ARCH/current/images/netboot/ldlinux.c32
 RUN mkdir pxelinux.cfg
 RUN printf "DEFAULT linux\nLABEL linux\nKERNEL linux\nAPPEND initrd=initrd.gz\n" >pxelinux.cfg/default
 CMD \
@@ -29,3 +30,5 @@ CMD \
 # Let's be honest: I don't know if the --pxe-service option is necessary.
 # The iPXE loader in QEMU boots without it.  But I know how some PXE ROMs
 # can be picky, so I decided to leave it, since it shouldn't hurt.
+
+# This Dockerfile may require --privileged
