@@ -2,9 +2,10 @@ FROM stackbrew/debian:jessie
 RUN apt-get -q update
 RUN apt-get -qy install dnsmasq wget iptables
 COPY pipework /root
-RUN chmod +x pipework
+RUN chmod +x /root/pipework
 RUN mkdir /tftp
 WORKDIR /tftp
+ENV NETBOOT https://boot.netboot.xyz
 RUN wget $NETBOOT/ipxe/netboot.xyz.kpxe
 CMD \
     echo Setting up iptables... &&\
@@ -17,11 +18,6 @@ CMD \
     dnsmasq --interface=eth1 \
     	    --dhcp-range=$mySUBNET.101,$mySUBNET.199,255.255.255.0,1h \
 	    --dhcp-boot=netboot.xyz.kpxe,pxeserver,$myIP \
-	    --pxe-service=x86PC,"Install Linux",pxelinux \
 	    --enable-tftp --tftp-root=/tftp/ --no-daemon
-
-# Let's be honest: I don't know if the --pxe-service option is necessary.
-# The iPXE loader in QEMU boots without it.  But I know how some PXE ROMs
-# can be picky, so I decided to leave it, since it shouldn't hurt.
 
 # This Dockerfile may require --privileged

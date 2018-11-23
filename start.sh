@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/bash -e
 
 echo "Building image 'pxe'"
 
 docker build -t pxe .
 
-docker run pxe --privileged
+docker run --privileged pxe
